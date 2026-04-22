@@ -1,4 +1,6 @@
 {
 	"editor.insertSpaces": false,
+	"js/ts.tsc.autoDetect": "off",
+	"js/ts.tsdk.path": "node_modules/typescript/lib",
 	"npm.packageManager": "npm"
 }

@@ -2,5 +2,10 @@
 	"name": "@bryanjhv/dockaddy",
 	"type": "module",
 	"version": "0.0.0",
-	"private": true
+	"private": true,
+	"devDependencies": {
+		"@tsconfig/node-ts": "23.6.4",
+		"@tsconfig/strictest": "2.0.8",
+		"typescript": "6.0.3"
+	}
 }
