@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,53 @@
 		<link rel="stylesheet" href="./src/styles.css" />
 	</head>
 	<body>
-		<div id="app"></div>
+		<header>
+			<hgroup>
+				<h1>🐳 dockaddy</h1>
+				<p>Compose to Caddyfile converter</p>
+			</hgroup>
+			<nav>
+				<button id="themeBtn" title="Theme">🌙</button>
+			</nav>
+		</header>
+		<main>
+			<div id="loadDiv">⏳</div>
+			<section>
+				<header>
+					<h2>🐙 compose.yaml</h2>
+					<nav>
+						<button title="Load">📂</button>
+						<button title="Format">🧹</button>
+					</nav>
+				</header>
+				<div>
+					<div id="inputDiv"></div>
+					<textarea id="inputTxt" spellcheck="false"></textarea>
+				</div>
+				<div id="errorDiv" hidden>
+					<p>
+						<b>ERROR</b>
+						<br />
+						<span></span>
+					</p>
+				</div>
+			</section>
+			<section>
+				<header>
+					<h2>🔒 Caddyfile</h2>
+					<nav>
+						<button title="Copy">📋</button>
+					</nav>
+				</header>
+				<div>
+					<div id="outputDiv"></div>
+					<textarea id="outputTxt" spellcheck="false" readonly></textarea>
+				</div>
+			</section>
+		</main>
+		<footer>
+			<p>© 2026 Bryan Horna</p>
+		</footer>
 		<script type="module" src="./src/main.ts"></script>
 	</body>
 </html>

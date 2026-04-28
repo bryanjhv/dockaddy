@@ -1,0 +1,170 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/* vite transforms light-dark() */
+html {
+	--bg: #fff;
+	--fg: #000;
+}
+
+html.dark {
+	--bg: #1a1a1a;
+	--fg: #e8e8e8;
+}
+
+body {
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	font-family: system-ui, sans-serif;
+	font-size: 0.875rem;
+	background: var(--bg);
+	color: var(--fg);
+}
+
+h1,
+h2 {
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+hgroup {
+	position: absolute;
+	left: 50%;
+	translate: -50% 0;
+	text-align: center;
+	pointer-events: none;
+}
+
+footer p {
+	text-align: center;
+}
+
+button {
+	background: transparent;
+	border: 1px solid currentColor;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	padding: 0.25rem;
+	aspect-ratio: 1;
+	border-radius: 3px;
+}
+
+body > header {
+	position: relative;
+	display: flex;
+	align-items: center;
+	padding: 1rem;
+	border-bottom: 1px solid currentColor;
+}
+
+body > header nav {
+	margin-left: auto;
+}
+
+main {
+	flex: 1;
+	display: flex;
+	overflow: hidden;
+	position: relative;
+}
+
+section {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border-right: 1px solid currentColor;
+}
+
+section:last-child {
+	border-right: none;
+}
+
+section > header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5rem 1rem;
+	border-bottom: 1px solid currentColor;
+	flex-shrink: 0;
+}
+
+section > header > nav {
+	display: flex;
+	gap: 0.5rem;
+}
+
+section > div:first-of-type {
+	position: relative;
+	flex: 1;
+}
+
+textarea,
+.shiki {
+	position: absolute;
+	inset: 0;
+	padding: 0.75rem 1rem;
+	font-family: ui-monospace, monospace;
+	font-size: inherit;
+	line-height: 1.6;
+	overflow: auto;
+	tab-size: 4;
+}
+
+textarea {
+	background: inherit; /* transparent once shiki loads */
+	color: inherit; /* transparent once shiki loads */
+	caret-color: var(--fg);
+	border: none;
+	outline: none;
+	resize: none;
+	z-index: 1;
+}
+
+.shiki {
+	background: transparent !important;
+	pointer-events: none;
+}
+
+#errorDiv {
+	flex-shrink: 0;
+	border-top: 1px solid currentColor;
+	padding: 0.5rem 1rem;
+}
+
+#errorDiv:not([hidden]) {
+	display: block;
+}
+
+footer {
+	flex-shrink: 0;
+	border-top: 1px solid currentColor;
+	padding: 1rem;
+}
+
+#loadDiv {
+	position: absolute;
+	inset: 0;
+	align-items: center;
+	justify-content: center;
+	background: var(--bg);
+	opacity: 0.75;
+	z-index: 2;
+	font-size: 1.5rem;
+	user-select: none;
+}
+
+#loadDiv:not([hidden]) {
+	display: flex;
+}
+
+html.dark .shiki,
+html.dark .shiki span {
+	color: var(--shiki-dark) !important;
+	/* background-color: var(--shiki-dark-bg) !important; */
+}
