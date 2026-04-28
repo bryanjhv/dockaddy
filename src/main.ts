@@ -44,6 +44,9 @@ const $outputTxt = $<HTMLTextAreaElement>('outputTxt')
 const $errorDiv = $<HTMLDivElement>('errorDiv')
 const $errorSpan = $errorDiv.querySelector('span')!
 
+const $copyBtn = $<HTMLButtonElement>('copyBtn')
+const $loadBtn = $<HTMLButtonElement>('loadBtn')
+
 // output helpers
 
 function showError(message?: string) {
@@ -55,9 +58,9 @@ function showError(message?: string) {
 	$errorSpan.textContent = message
 }
 
-function setOutput(value: string) {
-	$outputTxt.value = value
-	$outputTxt.dispatchEvent(new CustomEvent('input'))
+function setValue($txt: HTMLTextAreaElement, value: string) {
+	$txt.value = value
+	$txt.dispatchEvent(new CustomEvent('input'))
 }
 
 // parse logic
@@ -74,7 +77,7 @@ async function setupParse() {
 
 	function parse() {
 		showError('')
-		setOutput('')
+		setValue($outputTxt, '')
 
 		let parsed: unknown
 		try {
@@ -102,11 +105,58 @@ async function setupParse() {
 			}
 		}
 
-		setOutput(CaddyfileGenerator_GenerateCaddyfile(generator, compose))
+		setValue($outputTxt, CaddyfileGenerator_GenerateCaddyfile(generator, compose))
 	}
 
 	parse()
 	$inputTxt.addEventListener('input', parse)
+}
+
+// ui helpers
+
+function switchIcon($btn: HTMLButtonElement, success: boolean) {
+	const defIcon = $btn.textContent
+	$btn.textContent = success ? '✅' : '❌'
+	setTimeout(() => {
+		$btn.textContent = defIcon
+		$btn.disabled = false
+	}, 1000)
+}
+
+function setupHelpers() {
+	// eslint-disable-next-line ts/no-misused-promises
+	$copyBtn.addEventListener('click', async () => {
+		try {
+			$copyBtn.disabled = true
+			await navigator.clipboard.writeText($outputTxt.value)
+			switchIcon($copyBtn, true)
+		}
+		catch {
+			switchIcon($copyBtn, false)
+		}
+	})
+
+	const loadInput = document.createElement('input')
+	loadInput.type = 'file'
+	loadInput.accept = '.yaml,.yml'
+	$loadBtn.addEventListener('click', () => {
+		$loadBtn.disabled = true
+		loadInput.click()
+	})
+	// eslint-disable-next-line ts/no-misused-promises
+	loadInput.addEventListener('change', async () => {
+		const file = loadInput.files![0]
+		if (!file || !/\.ya?ml$/i.test(file.name)) {
+			loadError()
+			return
+		}
+		setValue($inputTxt, await file.text())
+		switchIcon($loadBtn, true)
+	})
+	function loadError() {
+		switchIcon($loadBtn, false)
+	}
+	loadInput.addEventListener('cancel', loadError)
 }
 
 // editor highlight
@@ -178,6 +228,8 @@ async function main() {
 
 	if (!$inputTxt.value)
 		$inputTxt.value = sampleCompose.trim()
+
+	setupHelpers()
 
 	try {
 		await setupParse()
