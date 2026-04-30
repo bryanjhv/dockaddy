@@ -124,6 +124,7 @@ textarea {
 	outline: none;
 	resize: none;
 	z-index: 1;
+	white-space: pre;
 }
 
 .shiki {
