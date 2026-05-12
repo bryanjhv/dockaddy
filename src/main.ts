@@ -157,6 +157,60 @@ function setupHelpers() {
 		switchIcon($loadBtn, false)
 	}
 	loadInput.addEventListener('cancel', loadError)
+
+	const INDENT = '  '
+	const ins = (text: string) => document.execCommand('insertText', false, text)
+	const lineStart = (value: string, p: number) => value.lastIndexOf('\n', p - 1) + 1
+
+	$inputTxt.addEventListener('keydown', (e) => {
+		if (e.ctrlKey || e.altKey || e.metaKey)
+			return
+		const { selectionStart, selectionEnd, value } = $inputTxt
+
+		if (e.key === 'Enter') {
+			e.preventDefault()
+			const line = value.slice(lineStart(value, selectionStart), selectionStart)
+			ins(`\n${line.match(/^ */)![0]}`)
+			return
+		}
+		if (e.key === 'Backspace') {
+			if (selectionStart === selectionEnd) {
+				const pre = value.slice(lineStart(value, selectionStart), selectionStart)
+				if (/^ +$/.test(pre)) {
+					e.preventDefault()
+					const deleteCount = pre.length % INDENT.length || INDENT.length
+					$inputTxt.setSelectionRange(selectionStart - deleteCount, selectionStart)
+					document.execCommand('delete')
+				}
+			}
+			return
+		}
+		if (e.key === 'Tab') {
+			e.preventDefault()
+			if (selectionStart === selectionEnd && !e.shiftKey) {
+				ins(INDENT)
+				return
+			}
+			const blockStart = lineStart(value, selectionStart)
+			const searchFrom = selectionEnd > selectionStart && value[selectionEnd - 1] === '\n' ? selectionEnd - 1 : selectionEnd
+			const nextNewline = value.indexOf('\n', searchFrom)
+			const blockEnd = nextNewline < 0 ? value.length : nextNewline
+			const lines = value.slice(blockStart, blockEnd).split('\n')
+			const out = lines.map(l => e.shiftKey ? l.replace(/^ {1,2}/, '') : `${INDENT}${l}`)
+			const outText = out.join('\n')
+			$inputTxt.setSelectionRange(blockStart, blockEnd)
+			ins(outText)
+			if (e.shiftKey) {
+				const firstRemoved = lines[0]!.length - out[0]!.length
+				const totalRemoved = (blockEnd - blockStart) - outText.length
+				const newStart = Math.max(blockStart, selectionStart - firstRemoved)
+				$inputTxt.setSelectionRange(newStart, Math.max(newStart, selectionEnd - totalRemoved))
+			}
+			else {
+				$inputTxt.setSelectionRange(selectionStart + INDENT.length, selectionEnd + lines.length * INDENT.length)
+			}
+		}
+	})
 }
 
 // editor highlight
