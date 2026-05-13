@@ -32,7 +32,7 @@ interface Compose {
 }
 
 function isListOrDict(value: unknown): value is ListOrDict {
-	return isString(value) || (
+	return isArray(value, isString) || (
 		isPlainObject(value)
 		&& isArray(Object.values(value), isAny([isString, isNumber, isBoolean, isNull]))
 	)
