@@ -5,6 +5,14 @@ function $<T extends HTMLElement>(id: string): T {
 	return document.getElementById(id) as T
 }
 
+function debounce(fn: () => void, ms: number) {
+	let t: ReturnType<typeof setTimeout>
+	return () => {
+		clearTimeout(t)
+		t = setTimeout(fn, ms)
+	}
+}
+
 // theme switcher (not wrapped so it runs first)
 
 const $root = document.documentElement
@@ -76,7 +84,6 @@ async function setupParse() {
 	})
 
 	function parse() {
-		showError('')
 		setValue($outputTxt, '')
 
 		let parsed: unknown
@@ -108,8 +115,12 @@ async function setupParse() {
 		setValue($outputTxt, CaddyfileGenerator_GenerateCaddyfile(generator, compose))
 	}
 
+	const debouncedParse = debounce(parse, 400)
 	parse()
-	$inputTxt.addEventListener('input', parse)
+	$inputTxt.addEventListener('input', () => {
+		showError()
+		debouncedParse()
+	})
 }
 
 // ui helpers
