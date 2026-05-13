@@ -1,20 +1,21 @@
-export interface Compose {
-	name?: string
-	services?: {
-		[k: string]: Service
-	}
-	[k: string]: unknown
-}
+export type ListOrDict = string[] | Record<string, string | number | boolean | null>
+
+export type Deployment = {
+	replicas?: number | string
+	labels?: ListOrDict
+} | null
+
+export type Build = string | { labels?: ListOrDict }
 
 export interface Service {
 	container_name?: string
-	deploy?: {
-		replicas?: number | string
-	}
-	labels?:
-		| {
-			[k: string]: string | number | boolean | null
-		}
-		| string[]
-	[k: string]: unknown
+	deploy?: Deployment
+	build?: Build
+	labels?: ListOrDict
+	scale?: number | string
+}
+
+export interface Compose {
+	name?: string
+	services?: Record<string, Service>
 }

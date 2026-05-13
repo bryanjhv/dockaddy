@@ -1,5 +1,4 @@
 import type { CodeToHastOptions } from 'shiki/core'
-import type { Compose } from './types'
 
 function $<T extends HTMLElement>(id: string): T {
 	return document.getElementById(id) as T
@@ -100,19 +99,7 @@ async function setupParse() {
 			return
 		}
 
-		const compose: Compose = {
-			name: parsed.name,
-			services: {},
-		}
-		for (const [serviceName, service] of Object.entries(parsed.services ?? {})) {
-			compose.services![serviceName] = {
-				container_name: service.container_name,
-				labels: service.labels,
-				deploy: service.deploy ?? {},
-			}
-		}
-
-		setValue($outputTxt, CaddyfileGenerator_GenerateCaddyfile(generator, compose))
+		setValue($outputTxt, CaddyfileGenerator_GenerateCaddyfile(generator, parsed))
 	}
 
 	const debouncedParse = debounce(parse, 400)

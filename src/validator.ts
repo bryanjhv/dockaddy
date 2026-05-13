@@ -1,3 +1,10 @@
+import type {
+	Build,
+	Compose,
+	Deployment,
+	ListOrDict,
+	Service,
+} from './types'
 import {
 	isAny,
 	isArray,
@@ -8,28 +15,6 @@ import {
 	isPlainObject,
 	isString,
 } from '@sindresorhus/is'
-
-type ListOrDict = string[] | Record<string, string | number | boolean | null>
-
-type Deployment = {
-	replicas?: number | string
-	labels?: ListOrDict
-} | null
-
-type Build = string | { labels?: ListOrDict }
-
-interface Service {
-	deploy?: Deployment
-	build?: Build
-	container_name?: string
-	labels?: ListOrDict
-	scale?: number | string
-}
-
-interface Compose {
-	name?: string
-	services?: Record<string, Service>
-}
 
 function isListOrDict(value: unknown): value is ListOrDict {
 	return isArray(value, isString) || (
