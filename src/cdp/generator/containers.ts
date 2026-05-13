@@ -1,4 +1,4 @@
-import type { Service } from '../../types'
+import type { ListOrDict, Service } from '../../types'
 import type { Container } from '../caddyfile'
 import type { CaddyfileGenerator } from './generator'
 import { _CaddyfileGenerator_filterLabels } from './generator'
@@ -9,24 +9,29 @@ interface Context extends Service {
 	name: string
 }
 
-function CaddyfileGenerator_getContainerCaddyfile(g: CaddyfileGenerator, container: Context): Container {
-	const labels: Record<string, string> = {}
-	if (Array.isArray(container.labels)) {
-		for (const label of container.labels) {
+function mergeLabels(target: Record<string, string>, src: ListOrDict | undefined) {
+	if (!src)
+		return
+	if (Array.isArray(src)) {
+		for (const label of src) {
 			let parts = label.split('=')
 			if (parts.length > 2)
 				parts = [parts[0]!, parts.slice(1).join('=')]
-			labels[parts[0]!] = parts[1] ?? ''
+			target[parts[0]!] = parts[1] ?? ''
 		}
 	}
-	else if (container.labels) {
-		for (const [key, value] of Object.entries(container.labels)) {
-			if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
-				labels[key] = String(value)
-			if (value === null)
-				labels[key] = ''
+	else {
+		for (const [key, value] of Object.entries(src)) {
+			target[key] = value === null ? '' : String(value)
 		}
 	}
+}
+
+function CaddyfileGenerator_getContainerCaddyfile(g: CaddyfileGenerator, container: Context): Container {
+	const labels: Record<string, string> = {}
+	mergeLabels(labels, container.labels)
+	mergeLabels(labels, container.deploy?.labels)
+	mergeLabels(labels, typeof container.build === 'object' ? container.build?.labels : undefined)
 
 	const caddyLabels = _CaddyfileGenerator_filterLabels(g, labels)
 
@@ -39,7 +44,7 @@ function CaddyfileGenerator_getContainerCaddyfile(g: CaddyfileGenerator, contain
 			let name = container.name
 			if (container.composeName)
 				name = `${container.composeName}-${name}`
-			const replicas = +(container.deploy?.replicas ?? 1)
+			const replicas = +(container.deploy?.replicas ?? container.scale ?? 1)
 			for (let i = 1; i <= replicas; i++)
 				names.push(`${name}-${i}`)
 		}
